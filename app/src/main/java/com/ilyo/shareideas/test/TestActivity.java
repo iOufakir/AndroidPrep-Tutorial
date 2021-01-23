@@ -38,9 +38,12 @@ public class TestActivity extends AppCompatActivity {
         List<String> listDate = Arrays.asList("Test 1", "Test 2", "Test 3", "Test 4", "Test 5");
         recyclerView.setAdapter(new TestAdapter(this, listDate));
 
+        // Preferences
+
+
         // Notifications
         
-
+        // WorkManager
 
     }
 

@@ -1,0 +1,13 @@
+<resources>
+    <string-array name="pref_entries_favorite_social">
+        <item>LinkedIn</item>
+        <item>Facebook</item>
+        <item>Twitter</item>
+    </string-array>
+
+    <string-array name="pref_values_favorite_social">
+        <item>www.linkedin.com</item>
+        <item>www.facebook.com</item>
+        <item>www.twitter.com</item>
+    </string-array>
+</resources>
