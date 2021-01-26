@@ -117,6 +117,8 @@ public class MainActivity extends AppCompatActivity
         TextView textUserName = headerView.findViewById(R.id.text_user_name);
         TextView textUserEmail = headerView.findViewById(R.id.text_user_email);
 
+        // For settings preferences
+        // getDefaultSharedPreferences: To get the default shared preference file for your entire app
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String userName = pref.getString("user_display_name", "");
         String userEmail = pref.getString("user_email_address", "");
