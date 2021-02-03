@@ -1,6 +1,11 @@
 package com.ilyo.shareideas;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,12 +16,16 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
 
     private static final String TAG = NoteActivity.class.getSimpleName();
+    private static final String MY_CHANNEL_ID = "com.ilyo.shareideas.My_Notification";
+    public static final int NOTIFICATION_ID = 0;
 
     private NoteInfo selectedNote;
     private boolean isNewNote;
@@ -68,7 +77,7 @@ public class NoteActivity extends AppCompatActivity {
             createNewNote();
         }
 
-        Log.i(TAG, "notePosition: "+notePosition);
+        Log.i(TAG, "notePosition: " + notePosition);
         selectedNote = DataManager.getInstance().getNotes().get(notePosition);
     }
 
@@ -94,18 +103,76 @@ public class NoteActivity extends AppCompatActivity {
         } else if (id == R.id.action_cancel) {
             isCancelling = true;
             finish();
-        }else if(id == R.id.action_next){
+        } else if (id == R.id.action_next) {
             moveNext();
+        } else if (id == R.id.action_set_reminder) {
+            showReminderNotification();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    // initially called before the menu is displayed + it's triggered by calling onPrepareOptionsMenu method
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "My channel Name :p";
+            NotificationChannel channel = new NotificationChannel(MY_CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("My channel description: Android system");
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void showReminderNotification() {
+        createNotificationChannel();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MY_CHANNEL_ID)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.like_notif))
+                .setSmallIcon(R.drawable.ic_stat_note_reminder)
+                .setContentTitle(textNoteTitle.getText().toString())
+                .setContentText(textNoteContent.getText().toString())
+                .setTicker("Review note ticker")
+                // To support devices running android 7.1 and lower: Priority
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                // To support devices running android 7.1 and lower: LED, Sound and vibration
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                // Set BigTextStyle to display more text
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .setBigContentTitle(textNoteTitle.getText().toString())
+                        .bigText(textNoteContent.getText().toString())
+                        .setSummaryText("Review Note!"))
+                // Associate the pendingIntent so we can launch any activity from the notification
+                .setContentIntent(buildIntent())
+                // Set additional actions using pending Intent
+                .addAction(R.drawable.ic_text, // Starting from Android 7.0, icons are not displayed in notifications
+                        "View all notes",
+                        PendingIntent.getActivity(this, NOTIFICATION_ID, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT))
+                // Setting auto-cancel to true closes the notification when user taps on it.
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    private PendingIntent buildIntent() {
+        Intent intent = new Intent(this, NoteActivity.class);
+        intent.putExtra(NoteListActivity.NOTE_POSITION, notePosition);
+
+        return PendingIntent.getActivity(this,
+                NOTIFICATION_ID,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    // initially called before the menu is displayed + it's triggered by calling invalidateOptionsMenu method
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_next);
-        item.setEnabled(notePosition < DataManager.getInstance().getNotes().size()-1);
+        item.setEnabled(notePosition < DataManager.getInstance().getNotes().size() - 1);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -133,7 +200,7 @@ public class NoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (isCancelling) {
-            Log.i(TAG, "Cancelling note at position: "+notePosition);
+            Log.i(TAG, "Cancelling note at position: " + notePosition);
             if (isNewNote) {
                 DataManager.getInstance().removeNote(notePosition);
             }
@@ -144,7 +211,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void saveNote() {
-        Log.d(TAG, "note title is: "+textNoteTitle.getText().toString());
+        Log.d(TAG, "note title is: " + textNoteTitle.getText().toString());
 
         selectedNote.setCourse((CourseInfo) spinnerCourses.getSelectedItem());
         selectedNote.setTitle(textNoteTitle.getText().toString());

@@ -1,6 +1,7 @@
 package com.ilyo.shareideas.test;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,9 +58,6 @@ public class TestActivity extends AppCompatActivity {
         preferencesEditor.clear();
         preferencesEditor.apply();
 
-
-        // Notifications
-        
         // WorkManager
 
     }

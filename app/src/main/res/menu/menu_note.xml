@@ -16,4 +16,7 @@
         android:id="@+id/action_send_mail"
         android:title="Send as email"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_set_reminder"
+        android:title="@string/action_set_reminder" />
 </menu>
