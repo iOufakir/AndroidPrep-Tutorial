@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
 
@@ -34,11 +35,24 @@ public class NoteActivity extends AppCompatActivity {
     private EditText textNoteContent;
     private int notePosition;
     private boolean isCancelling;
+    private NoteActivityViewModel viewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
+        // Initialize our model field and we will allow the android system to manage that state for us
+        ViewModelProvider viewModelProvider = new ViewModelProvider(getViewModelStore(), // Where the viewModel will be stored
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())); // RefactoryClass that can create the ViewModels
+        viewModel = viewModelProvider.get(NoteActivityViewModel.class);
+
+        // When the app is recreated from zero, example system destroy our app
+        if(savedInstanceState != null && viewModel.isNewCreated()){
+            viewModel.restoreState(savedInstanceState);
+        }
+
 
         spinnerCourses = findViewById(R.id.spinner_courses);
 
@@ -48,7 +62,12 @@ public class NoteActivity extends AppCompatActivity {
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCourses.setAdapter(adapterCourses);
 
+
         readDisplayStateValues();
+        if(viewModel.isNewCreated()){
+            // To preserve the original values of the note (Sending mail scenario + cancel btn)
+            saveOriginalNoteValues();
+        }
 
         textNoteTitle = findViewById(R.id.editText_title);
         textNoteContent = findViewById(R.id.text_note_content);
@@ -56,7 +75,25 @@ public class NoteActivity extends AppCompatActivity {
         if (!isNewNote)
             displayNote(spinnerCourses, textNoteTitle, textNoteContent);
 
+        viewModel.setNewCreated(false);
+
         Log.d(TAG, "onCreate");
+    }
+
+
+    // To ensure that our data are always saved even if the activity is totally destroyed
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        viewModel.saveState(outState);
+    }
+
+    private void saveOriginalNoteValues() {
+        if(isNewNote)
+            return;
+        viewModel.setOriginalNoteCourseId(selectedNote.getCourse().getCourseId());
+        viewModel.setOriginalNoteTitle(selectedNote.getTitle());
+        viewModel.setOriginalNoteText(selectedNote.getText());
     }
 
     private void displayNote(Spinner spinnerCourses, EditText textNoteTitle, EditText textNoteContent) {
@@ -203,6 +240,8 @@ public class NoteActivity extends AppCompatActivity {
             Log.i(TAG, "Cancelling note at position: " + notePosition);
             if (isNewNote) {
                 DataManager.getInstance().removeNote(notePosition);
+            }else{
+                storePreviousNoteValues();
             }
         } else {
             saveNote();
@@ -210,9 +249,15 @@ public class NoteActivity extends AppCompatActivity {
         Log.d(TAG, "onPause");
     }
 
-    private void saveNote() {
-        Log.d(TAG, "note title is: " + textNoteTitle.getText().toString());
+    private void storePreviousNoteValues() {
+        selectedNote.setText(viewModel.getOriginalNoteText());
+        selectedNote.setTitle(viewModel.getOriginalNoteTitle());
+        selectedNote.setCourse(DataManager.getInstance().getCourse(viewModel.getOriginalNoteCourseId()));
+    }
 
+
+    private void saveNote() {
+        Log.d(TAG, "save note title is: " + textNoteTitle.getText().toString());
         selectedNote.setCourse((CourseInfo) spinnerCourses.getSelectedItem());
         selectedNote.setTitle(textNoteTitle.getText().toString());
         selectedNote.setText(textNoteContent.getText().toString());
