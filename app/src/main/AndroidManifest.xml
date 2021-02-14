@@ -18,7 +18,8 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".test.TestActivity" />
+        <activity android:name=".room.test.TestActivity"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

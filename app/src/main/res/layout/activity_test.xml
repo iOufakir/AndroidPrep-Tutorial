@@ -5,7 +5,23 @@
     android:id="@+id/testLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test.TestActivity">
+    tools:context="com.ilyo.shareideas.room.test.TestActivity">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listItemsTest"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/test_row_layout" />
+
 
     <Button
         android:id="@+id/btnShowPopup"
@@ -17,21 +33,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/listItemsTest"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+    <Button
+        android:id="@+id/btn_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/test_row_layout" />
+        android:text="@string/btn_add_note"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="@+id/text_note_title"
+        app:layout_constraintStart_toStartOf="@+id/text_note_title"
+        app:layout_constraintTop_toBottomOf="@+id/text_note_title" />
+
+    <EditText
+        android:id="@+id/text_note_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="@string/note_title"
+        android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="@+id/listItemsTest"
+        app:layout_constraintStart_toStartOf="@+id/listItemsTest"
+        app:layout_constraintTop_toBottomOf="@+id/listItemsTest" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

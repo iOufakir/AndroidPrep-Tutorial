@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.ilyo.shareideas.test.TestActivity;
+import com.ilyo.shareideas.room.test.TestActivity;
 
 import java.util.List;
 

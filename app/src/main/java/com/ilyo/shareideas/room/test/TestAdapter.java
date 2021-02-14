@@ -1,4 +1,4 @@
-package com.ilyo.shareideas.test;
+package com.ilyo.shareideas.room.test;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,44 +10,50 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ilyo.shareideas.R;
+import com.ilyo.shareideas.room.Note;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Created by iLyas Dev on 09/01/2021
  */
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> {
 
-    private List<String> listItems;
-    private Context context;
+    private List<Note> listItems;
+    private final LayoutInflater mInflater;
 
-    public TestAdapter(final Context context, final List<String> listItems) {
-        this.listItems = listItems;
-        this.context = context;
+    public TestAdapter(final Context context) {
+        this.mInflater = LayoutInflater.from(context);
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.test_row_layout, parent, false));
+        return new MyViewHolder(mInflater.inflate(R.layout.test_row_layout, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
-        holder.titleView.setText( listItems.get(position) );
-
+        holder.titleView.setText( listItems.get(position).getTitle() );
     }
 
     @Override
     public int getItemCount() {
-        return listItems.size();
+        return Objects.isNull(listItems) ? 0 : listItems.size();
     }
 
 
+    public void setListItems(List<Note> listItems) {
+        this.listItems = listItems;
+        notifyDataSetChanged();
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView titleView;
+        private final TextView titleView;
 
         private MyViewHolder(@NonNull View itemView) {
             super(itemView);

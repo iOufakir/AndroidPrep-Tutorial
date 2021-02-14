@@ -4,6 +4,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
+
 import static org.junit.Assert.*;
 
 /**
@@ -12,7 +18,6 @@ import static org.junit.Assert.*;
 public class DataManagerTest {
 
     private static DataManager dataManagerInstance;
-
 
     @BeforeClass
     public static void classSetUp(){
